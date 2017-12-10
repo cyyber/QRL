@@ -22,9 +22,9 @@ class StakeValidatorsTracker:
             self._data = qrl_pb2.StakeValidatorsTracker()
         else:
             for key in self._data.sv_dict:
-                self.sv_dict[str(key).encode()] = StakeValidator(self._data.sv_dict[key])
+                self.sv_dict[str(key).encode()] = self._data.sv_dict[key]
             for key in self._data.future_stake_addresses:
-                self.future_stake_addresses[str(key).encode()] = StakeValidator(self._data.future_stake_addresses[key])
+                self.future_stake_addresses[str(key).encode()] = self._data.future_stake_addresses[key]
 
 
     #@property
@@ -66,7 +66,7 @@ class StakeValidatorsTracker:
             logger.info('Stake Validator already in Current Staker, sv_dict')
             return
         sv = StakeValidator.create(balance, stake_txn)
-        self.sv_dict[stake_txn.txfrom] = sv
+        self.sv_dict[stake_txn.txfrom] = sv.pbdata
         self._data.total_stake_amount += sv.balance
         self._data.expiry[stake_txn.activation_blocknumber + config.dev.blocks_per_epoch].addresses.extend([stake_txn.txfrom])
 
@@ -76,11 +76,11 @@ class StakeValidatorsTracker:
             return
         sv = StakeValidator.create(balance, stake_txn)
 
-        self.future_stake_addresses[stake_txn.txfrom] = sv
+        self.future_stake_addresses[stake_txn.txfrom] = sv.pbdata
         self._data.future_sv_dict[stake_txn.activation_blocknumber].stake_validators.extend([sv.pbdata])
 
     def _activate_future_sv(self, sv):
-        self.sv_dict[sv.address] = StakeValidator(sv)
+        self.sv_dict[sv.address] = sv
         self._data.total_stake_amount += sv.balance
         self._data.expiry[sv.activation_blocknumber + config.dev.blocks_per_epoch].addresses.extend([sv.address])
 
@@ -107,10 +107,9 @@ class StakeValidatorsTracker:
         if stake_address not in self.sv_dict:
             return False
 
-        #sv = StakeValidator(self.sv_dict[stake_address])
-        #result = sv.validate_hash(reveal_hash, block_idx)
-        #self.sv_dict[stake_address].CopyFrom(sv.pbdata)
-        result = self.sv_dict[stake_address].validate_hash(reveal_hash, block_idx)
+        sv = StakeValidator(self.sv_dict[stake_address])
+        result = sv.validate_hash(reveal_hash, block_idx)
+        self.sv_dict[stake_address] = sv.pbdata
         return result
 
     def get_stake_balance(self, stake_address: bytes)->int:
@@ -125,7 +124,7 @@ class StakeValidatorsTracker:
         return self.total_stake_amount
 
     def increase_nonce(self, address):
-        self.sv_dict[address].increase_nonce()
+        self.sv_dict[address].nonce += 1
 
     @staticmethod
     def from_json(json_data):
@@ -135,7 +134,7 @@ class StakeValidatorsTracker:
 
     def to_json(self):
         for key in self.sv_dict:
-            self._data.sv_dict[key].MergeFrom(self.sv_dict[key].pbdata)
+            self._data.sv_dict[str(key)].MergeFrom(self.sv_dict[key])
         for key in self.future_stake_addresses:
-            self._data.future_stake_addresses[key].MergeFrom(self.future_stake_addresses[key].pbdata)
+            self._data.future_stake_addresses[str(key)].MergeFrom(self.future_stake_addresses[key])
         return MessageToJson(self._data)
