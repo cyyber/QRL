@@ -2,6 +2,7 @@
 # Distributed under the MIT software license, see the accompanying
 # file LICENSE or http://www.opensource.org/licenses/mit-license.php.
 
+from copy import deepcopy
 from collections import defaultdict
 
 from qrl.generated import qrl_pb2
@@ -15,7 +16,7 @@ class AddressState(object):
             self._data = qrl_pb2.AddressState()
         else:
             for key in self._data.tokens:
-                self.tokens[str(key).encode()] = self._data.tokens[key]
+                self.tokens[str(key).encode()] = deepcopy(self._data.tokens[key])
 
     @property
     def pbdata(self):
@@ -48,10 +49,6 @@ class AddressState(object):
     def pubhashes(self):
         return self._data.pubhashes
 
-    #@property
-    #def tokens(self):
-    #    return self._data.tokens
-
     @staticmethod
     def create(address: bytes, nonce: int, balance: int, pubhashes: list, tokens: dict):
         address_state = AddressState()
@@ -62,7 +59,7 @@ class AddressState(object):
         address_state._data.pubhashes.extend(pubhashes)
 
         for token_txhash in tokens:
-            address_state._data.tokens[token_txhash] = tokens[token_txhash]
+            address_state.tokens[token_txhash] = tokens[token_txhash]
 
         return address_state
 

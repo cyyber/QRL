@@ -778,10 +778,6 @@ class BufferedChain:
 
                 stake_validators_tracker.update_sv(block.block_number)
 
-            if b'Qf41bab2c397653ac20cba20c1fb9e97dbc0b6d11409b9bd284392a30fcfeb77eff08ced4' in stake_validators_tracker.sv_dict:
-                logger.info('>>>inside Segmentation fault trigger')
-                print(stake_validators_tracker.sv_dict[b'Qf41bab2c397653ac20cba20c1fb9e97dbc0b6d11409b9bd284392a30fcfeb77eff08ced4'].slave_public_key)
-
             logger.info('[ChainBuffer] Block #%s added  stake: %s', block.block_number, block.stake_selector)
 
         return is_successful

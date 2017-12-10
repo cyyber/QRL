@@ -22,19 +22,10 @@ class StakeValidatorsTracker:
         if not self._data:
             self._data = qrl_pb2.StakeValidatorsTracker()
         else:
-            for key in self._data.sv_dict:
-                self.sv_dict[str(key).encode()] = self._data.sv_dict[key]
-            for key in self._data.future_stake_addresses:
-                self.future_stake_addresses[str(key).encode()] = self._data.future_stake_addresses[key]
-
-
-    #@property
-    #def sv_dict(self):
-    #    return self._data.sv_dict
-
-    #@property
-    #def future_stake_addresses(self):
-    #    return self._data.future_stake_addresses
+            for key in self._data.sv_dict.keys():
+                self.sv_dict[str(key).encode()] = deepcopy(self._data.sv_dict[key])
+            for key in self._data.future_stake_addresses.keys():
+                self.future_stake_addresses[str(key).encode()] = deepcopy(self._data.future_stake_addresses[key])
 
     @property
     def expiry(self):
@@ -78,7 +69,7 @@ class StakeValidatorsTracker:
             return
         sv = StakeValidator.create(balance, stake_txn)
 
-        self.future_stake_addresses[stake_txn.txfrom] = sv.pbdata
+        self.future_stake_addresses[stake_txn.txfrom] = deepcopy(sv.pbdata)
         self._data.future_sv_dict[stake_txn.activation_blocknumber].stake_validators.extend([sv.pbdata])
 
     def _activate_future_sv(self, sv):
@@ -135,19 +126,18 @@ class StakeValidatorsTracker:
         return StakeValidatorsTracker(pbdata)
 
     def to_json(self):
-        for key in self.sv_dict:
-            self._data.sv_dict[str(key)].MergeFrom(self.sv_dict[key])
-        for key in self.future_stake_addresses:
-            self._data.future_stake_addresses[str(key)].MergeFrom(self.future_stake_addresses[key])
-
         key_list = list(self._data.sv_dict.keys())
         for key in key_list:
-            if str(key).encode() not in self.sv_dict:
-                del self._data.sv_dict[key]
+            del self._data.sv_dict[key]
 
         key_list = list(self._data.future_stake_addresses.keys())
         for key in key_list:
-            if str(key).encode() not in self.future_stake_addresses:
-                del self._data.future_stake_addresses[key]
+            del self._data.future_stake_addresses[key]
+
+        for key in self.sv_dict:
+            self._data.sv_dict[key].MergeFrom(self.sv_dict[key])
+
+        for key in self.future_stake_addresses:
+            self._data.future_stake_addresses[key].MergeFrom(self.future_stake_addresses[key])
 
         return MessageToJson(self._data)
