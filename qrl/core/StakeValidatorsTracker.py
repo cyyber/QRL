@@ -2,6 +2,7 @@
 # Distributed under the MIT software license, see the accompanying
 # file LICENSE or http://www.opensource.org/licenses/mit-license.php.
 
+from copy import deepcopy
 from google.protobuf.json_format import MessageToJson, Parse
 
 from qrl.core import config, logger
@@ -66,7 +67,8 @@ class StakeValidatorsTracker:
             logger.info('Stake Validator already in Current Staker, sv_dict')
             return
         sv = StakeValidator.create(balance, stake_txn)
-        self.sv_dict[stake_txn.txfrom] = sv.pbdata
+
+        self.sv_dict[stake_txn.txfrom] = deepcopy(sv.pbdata)
         self._data.total_stake_amount += sv.balance
         self._data.expiry[stake_txn.activation_blocknumber + config.dev.blocks_per_epoch].addresses.extend([stake_txn.txfrom])
 
@@ -109,7 +111,7 @@ class StakeValidatorsTracker:
 
         sv = StakeValidator(self.sv_dict[stake_address])
         result = sv.validate_hash(reveal_hash, block_idx)
-        self.sv_dict[stake_address] = sv.pbdata
+        self.sv_dict[stake_address] = deepcopy(sv.pbdata)
         return result
 
     def get_stake_balance(self, stake_address: bytes)->int:
@@ -137,4 +139,15 @@ class StakeValidatorsTracker:
             self._data.sv_dict[str(key)].MergeFrom(self.sv_dict[key])
         for key in self.future_stake_addresses:
             self._data.future_stake_addresses[str(key)].MergeFrom(self.future_stake_addresses[key])
+
+        key_list = list(self._data.sv_dict.keys())
+        for key in key_list:
+            if str(key).encode() not in self.sv_dict:
+                del self._data.sv_dict[key]
+
+        key_list = list(self._data.future_stake_addresses.keys())
+        for key in key_list:
+            if str(key).encode() not in self.future_stake_addresses:
+                del self._data.future_stake_addresses[key]
+
         return MessageToJson(self._data)
