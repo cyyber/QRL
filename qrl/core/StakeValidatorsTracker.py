@@ -73,7 +73,7 @@ class StakeValidatorsTracker:
         self._data.future_sv_dict[stake_txn.activation_blocknumber].stake_validators.extend([sv.pbdata])
 
     def _activate_future_sv(self, sv):
-        self.sv_dict[sv.address] = sv
+        self.sv_dict[sv.address] = deepcopy(sv)
         self._data.total_stake_amount += sv.balance
         self._data.expiry[sv.activation_blocknumber + config.dev.blocks_per_epoch].addresses.extend([sv.address])
 
