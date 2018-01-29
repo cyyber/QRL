@@ -32,10 +32,7 @@ class UserConfig(object):
         self.max_state_limit = 10
         # PEER Configuration
         self.enable_peer_discovery = True  # Allows to discover new peers from the connected peers
-        self.peer_list = ['104.251.219.215',
-                          '104.251.219.145',
-                          '104.251.219.40',
-                          '104.237.3.185']
+        self.peer_list = []
 
         self.max_peers_limit = 100  # Number of allowed peers
         self.chain_state_timeout = 180
@@ -98,7 +95,7 @@ class DevConfig(object):
 
         self.version = version
         self.required_version = '0.0.'
-        self.genesis_prev_headerhash = b'The Three-Body Problem'
+        self.genesis_prev_headerhash = b'Bomber'
 
         ################################################################
         # Warning: Don't change following configuration.               #
@@ -107,7 +104,7 @@ class DevConfig(object):
 
         self.public_ip = None
         self.reorg_limit = 7 * 24 * 60  # 7 days * 24 hours * 60 blocks per hour
-        self.cache_frequency = 1000
+        self.cache_frequency = 10
 
         self.message_q_size = 300
         self.message_receipt_timeout = 10  # request timeout for full message
