@@ -23,7 +23,7 @@ class ChainManager:
     def __init__(self, state):
         self.state = state
         self.tx_pool = TransactionPool()  # TODO: Move to some pool manager
-        self.last_block = GenesisBlock()
+        self.last_block = Block.from_json(GenesisBlock().to_json())
         self.current_difficulty = StringToUInt256(str(config.dev.genesis_difficulty))
         self._difficulty_tracker = DifficultyTracker()
 
@@ -211,7 +211,7 @@ class ChainManager:
 
             self.trigger_miner = False
             if new_block_difficulty > last_block_difficulty:
-                if self.last_block.prev_headerhash != block.prev_headerhash:
+                if self.last_block.headerhash != block.prev_headerhash:
                     self.rollback(self.last_block, block)
                     self.trigger_miner = True
                     return True
