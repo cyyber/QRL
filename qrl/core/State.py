@@ -68,6 +68,7 @@ class StateLoader:
     def destroy(self, batch=None):
         for address in self._data.addresses:
             self._db.delete(self.state_code + address, batch)
+        del self._data.addresses[:]
 
     def update_main(self, batch=None):
         for address in self._data.addresses:
