@@ -293,7 +293,7 @@ class State:
         return addresses
 
     def set_addresses_state(self, addresses_state: dict, state_code: bytes):
-        str_state_code = bin2hstr(state_code)
+        str_state_code = bin2hstr(state_code).encode()
         index = -1
         found = False
         for state_object in self.state_objects.state_loaders:
