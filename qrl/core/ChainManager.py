@@ -214,7 +214,6 @@ class ChainManager:
                 if self.last_block.headerhash != block.prev_headerhash:
                     logger.info('Calling Rollback')
                     self.rollback(block, batch)
-                    self.trigger_miner = True
                     return True
 
                 self.state.update_mainchain_state(address_txn, block.block_number, block.headerhash)
@@ -230,13 +229,14 @@ class ChainManager:
 
         return False
 
-    def rollback(self, new_block, batch):
-        header_hash = new_block.prev_headerhash
+    def rollback(self, block, batch):
+        header_hash = block.headerhash
         hash_path = []
         while True:
-            hash_path.append(header_hash)
             if self.state.state_objects.contains(header_hash):
+                logger.info('Breaking at %s #%s', header_hash, block.block_number)
                 break
+            hash_path.append(header_hash)
             block = self.state.get_block(header_hash)
             if not block:
                 return None
@@ -256,7 +256,7 @@ class ChainManager:
             self.state.update_mainchain_height(block.block_number, batch)
             self.state.update_tx_metadata(block, batch)
 
-            self.trigger_miner = True
+        self.trigger_miner = True
 
     def _add_block(self, block, ignore_duplicate=False, batch=None):
         block_size_limit = self.state.get_block_size_limit(block)
