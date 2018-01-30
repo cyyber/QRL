@@ -242,7 +242,7 @@ class ChainManager:
                 logger.warning('[rollback] Block not found for %s', header_hash)
                 break
 
-        self.state.state_objects.destroy_current_state()
+        self.state.state_objects.destroy_current_state(batch)
 
         for header_hash in hash_path[-1::-1]:
             block = self.state.get_block(header_hash)
