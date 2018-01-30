@@ -212,6 +212,7 @@ class ChainManager:
             self.trigger_miner = False
             if new_block_difficulty > last_block_difficulty:
                 if self.last_block.headerhash != block.prev_headerhash:
+                    logger.info('Calling Rollback')
                     self.rollback(self.last_block, block)
                     self.trigger_miner = True
                     return True

@@ -178,7 +178,9 @@ class StateObjects:
         str_headerhash = bin2hstr(headerhash).encode()
         for index in range(len(self._state_loaders)):
             state_loader = self._state_loaders[index]
+            logger.info('Comparing #%s>%s', state_loader.block_number, block_number)
             if state_loader.block_number > block_number:
+                logger.info('Destroyed State #%s', state_loader.block_number)
                 self.destroy_state_loader(index)
                 index -= 1
                 continue

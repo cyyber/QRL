@@ -32,7 +32,7 @@ class UserConfig(object):
         self.max_state_limit = 10
         # PEER Configuration
         self.enable_peer_discovery = True  # Allows to discover new peers from the connected peers
-        self.peer_list = []
+        self.peer_list = ["35.177.60.137"]
 
         self.max_peers_limit = 100  # Number of allowed peers
         self.chain_state_timeout = 180
