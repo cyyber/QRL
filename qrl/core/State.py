@@ -343,6 +343,12 @@ class State:
                 break
             header_hash = block.prev_headerhash
 
+        for genesis_balance in GenesisBlock().genesis_balance:
+            bytes_addr = genesis_balance.address.encode()
+            if not addresses_state[bytes_addr]:
+                addresses_state[bytes_addr] = AddressState.get_default(bytes_addr)
+                addresses_state[bytes_addr]._data.balance = genesis_balance.balance
+
         for address in addresses_state:
             if not addresses_state[address]:
                 addresses_state[address] = AddressState.get_default(address)
