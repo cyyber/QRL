@@ -300,7 +300,7 @@ class State:
         :param state_code:
         :return:
         """
-        str_state_code = bin2hstr(state_code)
+        str_state_code = bin2hstr(state_code).encode()
         index = -1
         found = False
         for state_object in self.state_objects.state_loaders:
