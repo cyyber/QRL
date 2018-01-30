@@ -326,7 +326,8 @@ class State:
                 break
             block = self.get_block(header_hash)
             if not block:
-                return None
+                logger.warning('[get_state] Block not found for %s', header_hash)
+                break
             if block.block_number == 0:
                 break
             header_hash = block.prev_headerhash
