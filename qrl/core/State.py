@@ -148,7 +148,7 @@ class StateObjects:
         self._current_state.put_addresses_state(addresses_state)
 
     def contains(self, headerhash: bytes) -> bool:
-        str_headerhash = bin2hstr(headerhash)
+        str_headerhash = bin2hstr(headerhash).encode()
         for state_obj in self._state_loaders:
             if state_obj.state_code == str_headerhash:
                 return True
