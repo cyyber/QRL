@@ -213,7 +213,7 @@ class ChainManager:
             if new_block_difficulty > last_block_difficulty:
                 if self.last_block.headerhash != block.prev_headerhash:
                     logger.info('Calling Rollback')
-                    self.rollback(self.last_block, block)
+                    self.rollback(block, batch)
                     self.trigger_miner = True
                     return True
 
