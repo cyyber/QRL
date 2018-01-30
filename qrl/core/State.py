@@ -293,6 +293,13 @@ class State:
         return addresses
 
     def set_addresses_state(self, addresses_state: dict, state_code: bytes):
+        """
+        Sets the addresses_state from the latest state objects cache from or after
+        state_code.
+        :param addresses_state:
+        :param state_code:
+        :return:
+        """
         str_state_code = bin2hstr(state_code).encode()
         index = -1
         found = False
@@ -303,8 +310,8 @@ class State:
                 break
 
         if not found:
-            logger.warning('State Code not found %s', str_state_code)
-            return None
+            logger.warning('Not Possible: State Code not found %s', str_state_code)
+            raise Exception
 
         for address in addresses_state:
             for state_obj_index in range(index, -1, -1):
@@ -336,11 +343,13 @@ class State:
                 break
             header_hash = block.prev_headerhash
 
+        """
         for genesis_balance in GenesisBlock().genesis_balance:
             bytes_addr = genesis_balance.address.encode()
             if not addresses_state[bytes_addr]:
                 addresses_state[bytes_addr] = AddressState.get_default(bytes_addr)
             addresses_state[bytes_addr]._data.balance = genesis_balance.balance
+        """
 
         for address in addresses_state:
             if not addresses_state[address]:
@@ -521,26 +530,18 @@ class State:
             return
 
         # TODO (cyyber): Move To State Cache, instead of writing directly
-        # FIXME: Inconsistency in the keys/types
         for protobuf_txn in block.transactions:
             txn = Transaction.from_pbdata(protobuf_txn)
-            if txn.subtype in (qrl_pb2.Transaction.TRANSFER,
-                               qrl_pb2.Transaction.COINBASE,
-                               qrl_pb2.Transaction.MESSAGE,
-                               qrl_pb2.Transaction.TOKEN,
-                               qrl_pb2.Transaction.TRANSFERTOKEN,
-                               qrl_pb2.Transaction.LATTICE,
-                               qrl_pb2.Transaction.SLAVE):
-                self._db.put(bin2hstr(txn.txhash),
-                             [txn.to_json(), block.block_number, block.timestamp],
-                             batch)
-                # FIXME: Being updated without batch, need to fix,
-                if txn.subtype == qrl_pb2.Transaction.TRANSFERTOKEN:
-                    self.update_token_metadata(txn)
-                if txn.subtype == qrl_pb2.Transaction.TOKEN:
-                    self.create_token_metadata(txn)
+            self._db.put(bin2hstr(txn.txhash),
+                         [txn.to_json(), block.block_number, block.timestamp],
+                         batch)
+            # FIXME: Being updated without batch, need to fix,
+            if txn.subtype == qrl_pb2.Transaction.TRANSFERTOKEN:
+                self.update_token_metadata(txn)
+            if txn.subtype == qrl_pb2.Transaction.TOKEN:
+                self.create_token_metadata(txn)
 
-                self.increase_txn_count(txn.txfrom)
+            self.increase_txn_count(txn.txfrom)
 
         self.update_last_tx(block, batch)
         # Disabled as complete token list over the network is not required
@@ -578,15 +579,11 @@ class State:
         self._db.put_raw(address_state.address, data, batch)
 
     def get_address(self, address: bytes) -> AddressState:
-        # FIXME: Avoid two calls to know if address is not recognized (merged with is used)
         address_state = self.state_objects.get_address(address)
+
         if not address_state:
-            return AddressState.create(address=address,
-                                       nonce=config.dev.default_nonce,
-                                       balance=config.dev.default_account_balance,
-                                       ots_bitfield=[b'\x00'] * config.dev.ots_bitfield_size,
-                                       tokens=dict(),
-                                       slave_pks_access_type=dict())
+            return self._get_address_state(address)
+
         return address_state
 
     def nonce(self, addr: bytes) -> int:
