@@ -195,6 +195,8 @@ class Transaction(object, metaclass=ABCMeta):
                 logger.info('Subtype %s', self.subtype)
                 return False
 
+        return True
+
     def validate(self) -> bool:
         """
         This method calls validate_or_raise, logs any failure and returns True or False accordingly
