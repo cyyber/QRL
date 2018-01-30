@@ -68,6 +68,7 @@ class StateLoader:
     def destroy(self, batch=None):
         for address in self._data.addresses:
             self._db.delete(self.state_code + address, batch)
+        del self._data.addresses[:]
 
     def update_main(self, batch=None):
         for address in self._data.addresses:
@@ -176,18 +177,24 @@ class StateObjects:
         :return:
         """
         str_headerhash = bin2hstr(headerhash).encode()
-        for index in range(len(self._state_loaders)):
+        len_state_loaders = len(self._state_loaders)
+        index = 0
+        while index < len_state_loaders:
             state_loader = self._state_loaders[index]
+            logger.info('Comparing #%s>%s', state_loader.block_number, block_number)
             if state_loader.block_number > block_number:
+                logger.info('Destroyed State #%s', state_loader.block_number)
                 self.destroy_state_loader(index)
-                index -= 1
+                len_state_loaders -= 1
                 continue
 
             if state_loader.block_number == block_number:
                 if state_loader.state_code != str_headerhash:
                     self.destroy_state_loader(index)
-                    index -= 1
+                    len_state_loaders -= 1
                     continue
+
+            index += 1
 
     def destroy_current_state(self, batch):
         self._current_state.destroy(batch)
