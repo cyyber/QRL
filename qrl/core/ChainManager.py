@@ -233,7 +233,7 @@ class ChainManager:
         header_hash = block.headerhash
         hash_path = []
         while True:
-            if self.state.state_objects.contains(block.header_hash):
+            if self.state.state_objects.contains(header_hash):
                 break
             hash_path.append(header_hash)
             block = self.state.get_block(block.prev_headerhash)
