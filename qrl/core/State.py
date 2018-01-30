@@ -129,10 +129,9 @@ class StateObjects:
                 return state_obj
         return None
 
-    def push(self, addresses_state: dict, headerhash: bytes, batch=None):
+    def push(self, headerhash: bytes, batch=None):
         state_loader = StateLoader(state_code=bin2hstr(headerhash).encode(), db=self._db)
         self._current_state.commit(state_loader)
-        # state_loader.put_addresses_state(addresses_state)
 
         self._data.state_loaders.append(state_loader.state_code)
         self._state_loaders.append(state_loader)
@@ -149,7 +148,7 @@ class StateObjects:
         self._current_state.put_addresses_state(addresses_state)
 
     def contains(self, headerhash: bytes) -> bool:
-        str_headerhash = bin2hstr(headerhash)
+        str_headerhash = bin2hstr(headerhash).encode()
         for state_obj in self._state_loaders:
             if state_obj.state_code == str_headerhash:
                 return True
@@ -381,7 +380,7 @@ class State:
         self.state_objects.update_current_state(addresses_state)
 
         if block_number % config.dev.cache_frequency == 0:
-            self.state_objects.push(addresses_state, headerhash)
+            self.state_objects.push(headerhash)
 
     def get_ephemeral_metadata(self, msg_id: bytes):
         try:

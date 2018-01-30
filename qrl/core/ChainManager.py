@@ -66,7 +66,8 @@ class ChainManager:
                 bytes_addr = genesis_balance.address.encode()
                 addresses_state[bytes_addr] = AddressState.get_default(bytes_addr)
                 addresses_state[bytes_addr]._data.balance = genesis_balance.balance
-            self.state.state_objects.push(addresses_state, genesis_block.headerhash)
+            self.state.state_objects.update_current_state(addresses_state)
+            self.state.state_objects.push(genesis_block.headerhash)
         else:
             self.last_block = self.get_block_by_number(height)
             self.current_difficulty = self.state.get_block_metadata(self.last_block.headerhash).block_difficulty
@@ -232,7 +233,7 @@ class ChainManager:
         header_hash = block.headerhash
         hash_path = []
         while True:
-            if self.state.state_objects.contains(header_hash):
+            if self.state.state_objects.contains(block.header_hash):
                 break
             hash_path.append(header_hash)
             block = self.state.get_block(block.prev_headerhash)
