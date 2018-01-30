@@ -243,7 +243,7 @@ class ChainManager:
             block = self.state.get_block(block.prev_headerhash)
             if not block:
                 logger.warning('[rollback] Block not found for %s', bin2hstr(header_hash))
-                logger.warning('Next block #%s', prev_block.block_number, bin2hstr(prev_block.headerhash))
+                logger.warning('Next block #%s %s', prev_block.block_number, bin2hstr(prev_block.headerhash))
                 break
 
         self.state.state_objects.destroy_current_state(batch)
