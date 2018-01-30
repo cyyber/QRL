@@ -237,11 +237,10 @@ class ChainManager:
                 logger.info('Breaking at %s #%s', header_hash, block.block_number)
                 break
             hash_path.append(header_hash)
-            block = self.state.get_block(header_hash)
+            block = self.state.get_block(block.prev_headerhash)
             if not block:
                 logger.warning('[rollback] Block not found for %s', header_hash)
                 break
-            header_hash = block.prev_headerhash
 
         self.state.state_objects.destroy_current_state()
 
