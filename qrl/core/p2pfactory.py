@@ -212,6 +212,9 @@ class P2PFactory(ServerFactory):
         self._last_requested_block_idx += 1
         self.peer_fetch_block()
 
+    def is_syncing(self) -> bool:
+        return self._syncing_enabled
+
     def is_syncing_finished(self):
         last_blocknum = self._target_node_header_hash.block_number + len(self._target_node_header_hash.headerhashes) - 1
         if self._last_requested_block_idx == last_blocknum:
