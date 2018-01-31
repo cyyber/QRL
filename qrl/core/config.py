@@ -33,10 +33,7 @@ class UserConfig(object):
 
         # PEER Configuration
         self.enable_peer_discovery = True  # Allows to discover new peers from the connected peers
-        self.peer_list = ['104.251.219.215',
-                          '104.251.219.145',
-                          '104.251.219.40',
-                          '104.237.3.185']
+        self.peer_list = ['35.177.60.137']
 
         self.max_peers_limit = 100  # Number of allowed peers
         self.chain_state_timeout = 180
