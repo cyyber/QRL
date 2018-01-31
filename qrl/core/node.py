@@ -183,13 +183,13 @@ class POW(ConsensusMechanism):
     ##############################################
 
     def monitor_miner(self):
-        logger.debug('Running Monitor Miner')
+        reactor.callLater(60, self.monitor_miner)
+
         if self.p2p_factory.is_syncing():
             return
         if not self.miner.isRunning():
             logger.debug('Mine next called by monitor_miner')
             self.mine_next(self.chain_manager.last_block)
-        reactor.callLater(60, self.monitor_miner)
 
     def pre_block_logic(self, block: Block):
         logger.debug('Checking miner lock')
