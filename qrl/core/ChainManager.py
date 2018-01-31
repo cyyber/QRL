@@ -230,16 +230,16 @@ class ChainManager:
         return False
 
     def rollback(self, block):
-        header_hash = block.headerhash
         hash_path = []
         while True:
-            if self.state.state_objects.contains(header_hash):
+            if self.state.state_objects.contains(block.headerhash):
                 break
-            hash_path.append(header_hash)
-            block = self.state.get_block(block.prev_headerhash)
-            if not block:
-                logger.warning('No block found %s', header_hash)
+            hash_path.append(block.headerhash)
+            new_block = self.state.get_block(block.prev_headerhash)
+            if not new_block:
+                logger.warning('No block found %s', block.prev_headerhash)
                 break
+            block = new_block
 
         self.state.state_objects.destroy_current_state(None)
 
