@@ -52,7 +52,7 @@ class P2PTxManagement(P2PBaseObserver):
                 return
 
         if mr_data.type == qrllegacy_pb2.LegacyMessage.BK:
-            if mr_data.block_number > source.factory.chain_height() + config.user.forward_block_limit:
+            if mr_data.block_number > source.factory.chain_height + config.user.forward_block_limit:
                 logger.debug('Skipping block #%s', mr_data.block_number)
                 return
 
