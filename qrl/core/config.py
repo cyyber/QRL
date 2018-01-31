@@ -47,7 +47,7 @@ class UserConfig(object):
         self.wallet_staking_dir = os.path.join(self.qrl_dir, "wallet")
 
         # Block Limits
-        self.forward_block_limit = 100  # Accept blocks up to the current chain height + forward_block_limit
+        self.forward_block_limit = 10  # Accept blocks up to the current chain height + forward_block_limit
 
         # ======================================
         #    MINING WALLET CONFIGURATION
@@ -107,8 +107,8 @@ class DevConfig(object):
         ################################################################
 
         self.public_ip = None
-        self.reorg_limit = 7 * 24 * 60  # 7 days * 24 hours * 60 blocks per hour
-        self.cache_frequency = 1000
+        self.reorg_limit = 10  # 7 days * 24 hours * 60 blocks per hour
+        self.cache_frequency = 10
 
         self.message_q_size = 300
         self.message_receipt_timeout = 10  # request timeout for full message
