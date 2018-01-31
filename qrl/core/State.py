@@ -180,9 +180,9 @@ class StateObjects:
         index = 0
         while index < len_state_loaders:
             state_loader = self._state_loaders[index]
-            logger.info('Comparing #%s>%s', state_loader.block_number, block_number)
+            logger.debug('Comparing #%s>%s', state_loader.block_number, block_number)
             if state_loader.block_number > block_number:
-                logger.info('Destroyed State #%s', state_loader.block_number)
+                logger.debug('Destroyed State #%s', state_loader.block_number)
                 self.destroy_state_loader(index)
                 len_state_loaders -= 1
                 continue
@@ -528,7 +528,6 @@ class State:
             return
 
         # TODO (cyyber): Move To State Cache, instead of writing directly
-        # FIXME: Inconsistency in the keys/types
         for protobuf_txn in block.transactions:
             txn = Transaction.from_pbdata(protobuf_txn)
             self._db.put(bin2hstr(txn.txhash),
@@ -578,8 +577,8 @@ class State:
         self._db.put_raw(address_state.address, data, batch)
 
     def get_address(self, address: bytes) -> AddressState:
-        # FIXME: Avoid two calls to know if address is not recognized (merged with is used)
         address_state = self.state_objects.get_address(address)
+
         if not address_state:
             return self._get_address_state(address)
 

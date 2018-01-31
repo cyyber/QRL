@@ -23,7 +23,7 @@ class ChainManager:
     def __init__(self, state):
         self.state = state
         self.tx_pool = TransactionPool()  # TODO: Move to some pool manager
-        self.last_block = GenesisBlock()
+        self.last_block = Block.from_json(GenesisBlock().to_json())
         self.current_difficulty = StringToUInt256(str(config.dev.genesis_difficulty))
         self._difficulty_tracker = DifficultyTracker()
 
