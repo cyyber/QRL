@@ -213,7 +213,7 @@ class ChainManager:
             self.trigger_miner = False
             if new_block_difficulty > last_block_difficulty:
                 if self.last_block.headerhash != block.prev_headerhash:
-                    self.rollback(block, batch)
+                    self.rollback(block)
                     return True
 
                 self.state.update_mainchain_state(address_txn, block.block_number, block.headerhash)
@@ -229,7 +229,7 @@ class ChainManager:
 
         return False
 
-    def rollback(self, block, batch):
+    def rollback(self, block):
         header_hash = block.headerhash
         hash_path = []
         while True:
@@ -241,7 +241,7 @@ class ChainManager:
                 logger.warning('No block found %s', header_hash)
                 break
 
-        self.state.state_objects.destroy_current_state(batch)
+        self.state.state_objects.destroy_current_state(None)
 
         for header_hash in hash_path[-1::-1]:
             block = self.state.get_block(header_hash)
@@ -250,10 +250,10 @@ class ChainManager:
 
             self.state.update_mainchain_state(address_txn, block.block_number, block.headerhash)
             self.last_block = block
-            self._update_mainchain(block, batch)
+            self._update_mainchain(block, None)
             self.tx_pool.remove_tx_in_block_from_pool(block)
-            self.state.update_mainchain_height(block.block_number, batch)
-            self.state.update_tx_metadata(block, batch)
+            self.state.update_mainchain_height(block.block_number, None)
+            self.state.update_tx_metadata(block, None)
 
         self.trigger_miner = True
 
