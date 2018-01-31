@@ -52,9 +52,13 @@ class P2PTxManagement(P2PBaseObserver):
                 return
 
         if mr_data.type == qrllegacy_pb2.LegacyMessage.BK:
-            if mr_data.block_number > source.factory.chain_height() + config.user.forward_block_limit:
+            # TODO : Add the code for block number and timestamp validation
+            '''
+            if mr_data.block_number > source.factory.chain_height + config.user.forward_block_limit:
                 logger.debug('Skipping block #%s', mr_data.block_number)
                 return
+            '''
+            pass
 
         if source.factory.master_mr.contains(msg_hash, mr_data.type):
             return
