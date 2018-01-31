@@ -99,7 +99,7 @@ class DevConfig(object):
 
         self.version = version
         self.required_version = '0.0.'
-        self.genesis_prev_headerhash = b'The Three-Body Problem'
+        self.genesis_prev_headerhash = b'The Bomber'
 
         ################################################################
         # Warning: Don't change following configuration.               #
