@@ -279,15 +279,12 @@ class ChainManager:
         batch = self.state.get_batch()
         if self._add_block(block, batch=batch):
             self.state.write_batch(batch)
-
-            batch = self.state.get_batch()
-            self.update_child_metadata(block.headerhash, batch)
-            self.state.write_batch(batch)
+            self.update_child_metadata(block.headerhash)
             return True
 
         return False
 
-    def update_child_metadata(self, headerhash, batch):
+    def update_child_metadata(self, headerhash):
         block_metadata = self.state.get_block_metadata(headerhash)
 
         childs = list(block_metadata.child_headerhashes)
@@ -297,8 +294,8 @@ class ChainManager:
             block = self.state.get_block(child_headerhash)
             if not block:
                 continue
-            if not self._add_block(block, True, batch):
-                self._prune([block.headerhash], batch=batch)
+            if not self._add_block(block, True):
+                self._prune([block.headerhash], None)
                 continue
             block_metadata = self.state.get_block_metadata(child_headerhash)
             childs += block_metadata.child_headerhashes
@@ -310,8 +307,8 @@ class ChainManager:
             block_metadata = self.state.get_block_metadata(child_headerhash)
             childs += block_metadata.child_headerhashes
 
-            batch.Delete(bin2hstr(child_headerhash).encode())
-            batch.Delete(b'metadata_' + bin2hstr(child_headerhash).encode())
+            self.state.delete(bin2hstr(child_headerhash).encode(), batch)
+            self.state.delete(b'metadata_' + bin2hstr(child_headerhash).encode(), batch)
 
     def add_block_metadata(self, headerhash, block_timestamp, parent_headerhash, batch):
         parent_metadata = self.state.get_block_metadata(parent_headerhash)
