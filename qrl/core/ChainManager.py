@@ -244,6 +244,7 @@ class ChainManager:
                 break
             block = new_block
             if block.block_number == 0:
+                del hash_path[-1]  # Skip replaying Genesis Block
                 break
 
         self.state.state_objects.destroy_current_state(None)
