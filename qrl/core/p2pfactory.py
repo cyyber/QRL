@@ -216,8 +216,7 @@ class P2PFactory(ServerFactory):
         return self._syncing_enabled
 
     def is_syncing_finished(self):
-        last_blocknum = self._target_node_header_hash.block_number + len(self._target_node_header_hash.headerhashes) - 1
-        if self._last_requested_block_idx == last_blocknum:
+        if self._last_requested_block_idx == len(self._target_node_header_hash.headerhashes):
             self._last_requested_block_idx = None
             self._target_node_header_hash = None
             self._target_peer = None
@@ -236,9 +235,15 @@ class P2PFactory(ServerFactory):
                 self._syncing_enabled = False
                 return
         else:
+            curr_index = self._last_requested_block_idx - node_header_hash.block_number
+            while block and curr_index < len(node_header_hash.headerhashes):
+                block_headerhash = node_header_hash.headerhashes[curr_index]
+                block = self._chain_manager.state.get_block(block_headerhash)
+                self._last_requested_block_idx += 1
+                curr_index = self._last_requested_block_idx - node_header_hash.block_number
             if self.is_syncing_finished():
                 return
-            self._last_requested_block_idx += 1
+
             retry = 0
         self._target_peer.send_fetch_block(self._last_requested_block_idx)
         reactor.download_monitor = reactor.callLater(20, self.peer_fetch_block, retry+1)
