@@ -243,6 +243,8 @@ class ChainManager:
                 logger.warning('No block found %s', block.prev_headerhash)
                 break
             block = new_block
+            if block.block_number == 0:
+                break
 
         self.state.state_objects.destroy_current_state(None)
         block = self.state.get_block(hash_path[-1])
@@ -281,6 +283,10 @@ class ChainManager:
         return False
 
     def add_block(self, block: Block) -> bool:
+        if block.block_number < self.height - config.dev.reorg_limit:
+            logger.debug('Skipping block #%s as beyond re-org limit', block.block_number)
+            return False
+
         batch = self.state.get_batch()
         if self._add_block(block, batch=batch):
             self.state.write_batch(batch)
