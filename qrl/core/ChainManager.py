@@ -216,6 +216,9 @@ class ChainManager:
             self.trigger_miner = False
             if new_block_difficulty > last_block_difficulty:
                 if self.last_block.headerhash != block.prev_headerhash:
+                    logger.debug('ROLL BACK CALLED')
+                    logger.debug('last_block #%s %s', self.last_block.block_number, self.last_block.headerhash)
+                    logger.debug('block #%s %s', block.block_number, block.headerhash)
                     self.rollback(block)
                     return True
 
@@ -249,16 +252,23 @@ class ChainManager:
         self.state.state_objects.destroy_fork_states(block.block_number, block.headerhash)
 
         for header_hash in hash_path[-1::-1]:
+            logger.debug('1. ')
             block = self.state.get_block(header_hash)
             address_set = self.state.prepare_address_list(block)  # Prepare list for current block
             address_txn = self.state.get_state_mainchain(address_set)
+            logger.debug('2. ')
 
             self.state.update_mainchain_state(address_txn, block.block_number, block.headerhash)
+            logger.debug('3. ')
             self.last_block = block
             self._update_mainchain(block, None)
+            logger.debug('4. ')
             self.tx_pool.remove_tx_in_block_from_pool(block)
+            logger.debug('5. ')
             self.state.update_mainchain_height(block.block_number, None)
+            logger.debug('6. ')
             self.state.update_tx_metadata(block, None)
+            logger.debug('7. ')
 
         self.trigger_miner = True
 
@@ -290,6 +300,7 @@ class ChainManager:
         return False
 
     def update_child_metadata(self, headerhash):
+        logger.debug('Inside Update child metadata')
         block_metadata = self.state.get_block_metadata(headerhash)
 
         childs = list(block_metadata.child_headerhashes)
@@ -304,6 +315,7 @@ class ChainManager:
                 continue
             block_metadata = self.state.get_block_metadata(child_headerhash)
             childs += block_metadata.child_headerhashes
+        logger.debug('====Finished Update child metadata====')
 
     def _prune(self, childs, batch):
         while childs:

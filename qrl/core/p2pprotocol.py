@@ -49,6 +49,9 @@ class P2PProtocol(Protocol):
         self._observable.register(message_type, func)
 
     def connectionMade(self):
+        if self.peer_ip not in config.user.peer_list:
+            self.loseConnection()
+            return
         if self.factory.add_connection(self):
 
             self.peer_manager = self.factory._qrl_node.peer_manager
