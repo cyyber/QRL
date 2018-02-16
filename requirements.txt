@@ -15,5 +15,6 @@ protobuf
 pyopenssl>=17.3.0
 six>=1.9
 click==6.7
+setuptools>=38.0.0
 pyqrllib>=0.8.1,<0.9.0
 pyqryptonight>=0.6.0, <0.7.0
