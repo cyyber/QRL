@@ -28,7 +28,7 @@ class StateLoader:
         self.state_code = state_code
         if state_code != b'current_':
             json_data = self._db.get_raw(self.state_code)
-            logger.info('>>>>>>>> %s', self.state_code)
+            logger.error('>>>>>>>> %s', self.state_code)
             self._block_number = Block.from_json(json_data).block_number
         self._data = qrl_pb2.StateLoader()
         try:
