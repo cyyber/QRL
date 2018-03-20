@@ -279,7 +279,7 @@ class TestChainManager(TestCase):
                                                signing_xmss=bob_xmss,
                                                master_address=bob_xmss.address,
                                                nonce=2)
-                        block_2.set_mining_nonce(100)
+                        block_2.set_mining_nonce(104)
 
                         # Uncomment only to determine the correct mining_nonce of above blocks
                         # while not PoWValidator().validate_mining_nonce(state, block_2.blockheader, False):
