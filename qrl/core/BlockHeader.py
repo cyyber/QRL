@@ -1,7 +1,7 @@
 # coding=utf-8
 import functools
 from google.protobuf.json_format import MessageToJson, Parse
-from pyqrllib.pyqrllib import shake128
+from pyqrllib.pyqrllib import shake128, bin2hstr
 
 from qrl.core import config
 from qrl.core.formulas import block_reward
@@ -95,10 +95,22 @@ class BlockHeader(object):
 
         return bytes(blob)
 
-    @functools.lru_cache(maxsize=5)
+    def debug(self):
+        logger.info('block_number %s', self.block_number)
+        logger.info('timestamp %s', self.timestamp)
+        logger.info('prev_headerhash %s', bin2hstr(self.prev_blockheaderhash))
+        logger.info('block_reward %s', self.block_reward)
+        logger.info('fee_reward %s', self.fee_reward)
+        logger.info('tx merkle root %s', bin2hstr(self.tx_merkle_root))
+        logger.info('PK %s', bin2hstr(self.PK))
+        logger.info('mining_nonce %s', self.mining_nonce)
+
+    #@functools.lru_cache(maxsize=5)
     def _get_qryptonight_hash(self, blob):
         qn = Qryptonight()
-        return bytes(qn.hash(blob))
+        result = bytes(qn.hash(blob))
+        print('>> blob : %s \n result: %s' %(bin2hstr(blob), bin2hstr(result)) )
+        return result
 
     def generate_headerhash(self):
         return self._get_qryptonight_hash(self.mining_blob)
@@ -179,7 +191,10 @@ class BlockHeader(object):
             return False
 
         if self.generate_headerhash() != self.headerhash:
-            logger.warning('Headerhash false for block: failed validation')
+            print('^V^V^V^V^V^')
+            print(self.block_number, bin2hstr(self.generate_headerhash()), bin2hstr(self.headerhash))
+            logger.warning('vvv Headerhash false for block: failed validation')
+            self.debug()
             return False
 
         if self.block_reward != self.block_reward_calc():

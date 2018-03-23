@@ -149,6 +149,7 @@ class ChainManager:
             return False
 
         if not PoWValidator().validate_mining_nonce(self.state, block.blockheader):
+            print('>>>>. Failed pow validator')
             return False
 
         if not coinbase_tx.validate():

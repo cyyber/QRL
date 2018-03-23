@@ -88,7 +88,9 @@ class Miner(Qryptominer):
                      parent_difficulty):
 
         self.prepare_mining_xmss()
-
+        print("Before Mining Starts")
+        self._mining_block.blockheader.debug()
+        print("=====================")
         try:
             self.cancel()
 
@@ -116,6 +118,11 @@ class Miner(Qryptominer):
             logger.debug('Solution Found %s', nonce)
             self._mining_block.set_mining_nonce(nonce)
             logger.info('Block #%s nonce: %s', self._mining_block.block_number, StringToUInt256(str(nonce))[-4:])
+            logger.info('--->> %s', bin2hstr(self._mining_block.headerhash))
+            print("When mining done")
+            self._mining_block.blockheader.debug()
+            print("=====================")
+
             logger.info('Hash Rate: %s H/s', self.hashRate())
             cloned_block = copy.deepcopy(self._mining_block)
             self.pre_block_logic(cloned_block)

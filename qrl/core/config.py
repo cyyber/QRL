@@ -35,10 +35,7 @@ class UserConfig(object):
 
         # PEER Configuration
         self.enable_peer_discovery = True  # Allows to discover new peers from the connected peers
-        self.peer_list = ['104.251.219.215',
-                          '104.251.219.145',
-                          '104.251.219.40',
-                          '104.237.3.185']
+        self.peer_list = ['']
         self.peer_rate_limit = 500  # Max Number of messages per minute per peer
 
         self.ntp_servers = ['pool.ntp.org', 'ntp.ubuntu.com']
@@ -107,7 +104,7 @@ class DevConfig(object):
 
         self.version = version
         self.required_version = '0.0.'
-        self.genesis_prev_headerhash = b'The Burning Ice'
+        self.genesis_prev_headerhash = b'the bugger'
 
         ################################################################
         # Warning: Don't change following configuration.               #
@@ -147,7 +144,7 @@ class DevConfig(object):
         self.hash_buffer_size = 4
         self.minimum_minting_delay = 45  # Minimum delay in second before a block is being created
         self.mining_setpoint_blocktime = 60
-        self.genesis_difficulty = 5000
+        self.genesis_difficulty = 2
         self.tx_extra_overhead = 15  # 15 bytes
         self.coinbase_address = b'\x01\x03\x00\x08#\x82\xa5/\x8b\xa9\xc2\xd3:\xd8\x07\xc2\xcd\xd5\xbd\x08l,/\xe6<n\xa1;c\r\x12\x80\x89L:9\xe1\xc3\x80'
 
