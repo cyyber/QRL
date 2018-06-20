@@ -337,6 +337,8 @@ class ChainManager:
         """
         hash_path = []
         while self._last_block.headerhash != forked_header_hash:
+            logger.info("----> I am still running %s %s", bin2hstr(self._last_block.headerhash),
+                        bin2hstr(forked_header_hash))
             block = self._state.get_block(self._last_block.headerhash)
             mainchain_block = self._state.get_block_by_number(block.block_number)
 
@@ -420,6 +422,7 @@ class ChainManager:
             old_hash_path = self._rollback(forked_header_hash, fork_state)
             logger.info("----------------------->>>> Roll back DONE <<<<--------------------------")
         else:
+            logger.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! This should not start")
             old_hash_path = fork_state.old_mainchain_hash_path
 
         if not self.add_chain(hash_path[-1::-1], fork_state):
