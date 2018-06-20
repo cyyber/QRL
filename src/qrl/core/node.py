@@ -186,7 +186,7 @@ class POW(ConsensusMechanism):
     ##############################################
 
     def monitor_miner(self):
-        reactor.callLater(60, self.monitor_miner)
+        reactor.callLater(8, self.monitor_miner)
 
         if not config.user.mining_enabled:
             return
