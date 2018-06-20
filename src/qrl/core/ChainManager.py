@@ -398,7 +398,6 @@ class ChainManager:
             return True
 
     def _fork_recovery(self, block: Block, fork_state: qrlstateinfo_pb2.ForkState) -> bool:
-        return False
         logger.info("Triggered Fork Recovery")
         # This condition only becomes true, when fork recovery was interrupted
         if fork_state.fork_point_headerhash:
