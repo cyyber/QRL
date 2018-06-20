@@ -418,6 +418,7 @@ class ChainManager:
         if not rollback_done:
             logger.info("Rolling back")
             old_hash_path = self._rollback(forked_header_hash, fork_state)
+            logger.info("----------------------->>>> Roll back DONE <<<<--------------------------")
         else:
             old_hash_path = fork_state.old_mainchain_hash_path
 
