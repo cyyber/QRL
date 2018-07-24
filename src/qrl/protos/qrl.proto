@@ -490,6 +490,7 @@ message Transaction {
         Token token = 11;
         TransferToken transfer_token = 12;
         Slave slave = 13;
+        Contract contract = 14;
     }
 
     //////////
@@ -529,6 +530,11 @@ message Transaction {
     message Slave {
         repeated bytes slave_pks = 1;
         repeated uint32 access_types = 2;
+    }
+
+    message Contract {
+        bytes byte_code = 1;
+        uint64 amount = 2;
     }
 }
 

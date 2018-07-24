@@ -148,5 +148,3 @@ class TransferTransaction(Transaction):
 
     def set_affected_address(self, addresses_set: set):
         super().set_affected_address(addresses_set)
-        for addr_to in self.addrs_to:
-            addresses_set.add(addr_to)

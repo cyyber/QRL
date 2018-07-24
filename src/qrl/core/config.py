@@ -303,6 +303,11 @@ class DevConfig(object):
         # ======================================
         self.shor_per_quanta = decimal.Decimal(10 ** 9)
 
+        # ======================================
+        #             SMART CONTRACT
+        # ======================================
+        self.max_allowed_code_size = 102400  # in bytes
+
     @staticmethod
     def getInstance():
         if DevConfig.__instance is None:
