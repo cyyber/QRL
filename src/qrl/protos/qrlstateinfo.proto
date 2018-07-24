@@ -24,3 +24,7 @@ message ForkState {
                                                 // if the fork recovery fails
     repeated bytes new_mainchain_hash_path = 4; // Alternate chain hash path which is eligible to become mainchain
 }
+
+message HookPool {
+    bytes pool = 1;
+}

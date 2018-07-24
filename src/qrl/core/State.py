@@ -10,6 +10,7 @@ from pyqrllib.pyqrllib import bin2hstr
 from pyqryptonight.pyqryptonight import UInt256ToString
 
 from qrl.core import config
+from qrl.core.HookPool import HookPool
 from qrl.core.BlockMetadata import BlockMetadata
 from qrl.core.GenesisBlock import GenesisBlock
 from qrl.core.Block import Block
@@ -17,6 +18,7 @@ from qrl.core.misc import logger, db
 from qrl.core.txs.Transaction import Transaction
 from qrl.core.txs.TransferTokenTransaction import TransferTokenTransaction
 from qrl.core.txs.TokenTransaction import TokenTransaction
+from qrl.core.txs.Contract import Contract
 from qrl.core.txs.CoinBase import CoinBase
 from qrl.core.TokenMetadata import TokenMetadata
 from qrl.core.AddressState import AddressState
@@ -249,6 +251,26 @@ class State:
         self._db.put_raw(b'token_' + token.txhash,
                          token_metadata.serialize())
 
+    def create_contract_metadata(self, contract: Contract):
+        block_number = contract.get_hook()
+        hook_pool = self.get_hook_pool(block_number)
+        hook_pool.add(contract_address=contract.txhash)
+        self.put_hook_pool(block_number, hook_pool)
+
+    def get_hook_pool(self, block_number) -> HookPool:
+        try:
+            data = self._db.get_raw(b'hook_pool_' + block_number)
+            return HookPool.deserialize(data)
+        except KeyError:
+            pass
+        except Exception as e:
+            logger.error('[get_hook_pool] %s', e)
+
+        return HookPool()
+
+    def put_hook_pool(self, block_number, hook_pool: HookPool):
+        self._db.put_raw(b'hook_pool_' + block_number, hook_pool.serialize())
+
     def remove_transfer_token_metadata(self, transfer_token: TransferTokenTransaction):
         token_metadata = self.get_token_metadata(transfer_token.token_txhash)
         token_metadata.remove(transfer_token.txhash)
@@ -315,6 +337,8 @@ class State:
                 self.update_token_metadata(txn)
             elif isinstance(txn, TokenTransaction):
                 self.create_token_metadata(txn)
+            elif isinstance(txn, Contract):
+                self.create_contract_metadata(txn)
             self._increase_txn_count(self.get_txn_count(txn.addr_from),
                                      txn.addr_from)
 

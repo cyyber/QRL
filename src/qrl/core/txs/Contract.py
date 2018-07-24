@@ -23,6 +23,16 @@ class Contract(Transaction):
     def amount(self):
         return self._data.contract.amount
 
+    @property
+    def hook(self):
+        """
+        Read byte_code and detect future blockheight to hook, in case of no hook,
+        return the current blockheight as hook which will result into immediate
+        execution of contract.
+        :return:
+        """
+        return None
+
     def get_data_hash(self):
         tmptxhash = (self.master_addr +
                      self.fee.to_bytes(8, byteorder='big', signed=False) +
